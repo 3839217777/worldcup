@@ -3,85 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026世界杯·晋级路线图（左右对称实时版）</title>
+    <title>2026世界杯·晋级路线图（深色错位版）</title>
     <style>
         :root {
-            --bg: #0b1a2f;
-            --gold: #f0b323;
-            --gold-light: #ffd966;
-            --panel-bg: rgba(15, 33, 55, 0.9);
-            --border: #334155;
-            --text: #eef5ff;
+            --bg: #0b1a2f; --gold: #f0b323; --gold-light: #ffd966;
+            --panel-bg: rgba(15, 33, 55, 0.9); --border: #334155; --text: #eef5ff;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
             background: radial-gradient(circle at 20% 20%, #132a41, #0a1628);
             font-family: 'Segoe UI', system-ui, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: var(--text);
+            min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; color: var(--text);
         }
-        .app { width: 100%; max-width: 1400px; display: flex; flex-direction: column; gap: 18px; }
-        .header { text-align: center; }
+        .app { width:100%; max-width:1400px; display:flex; flex-direction:column; gap:18px; }
+        .header { text-align:center; }
         .header h1 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #f0b323, #ffd966);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 2rem; background: linear-gradient(135deg, #f0b323, #ffd966);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
-        .main-content { display: flex; gap: 24px; flex-wrap: wrap; }
+        .main-content { display:flex; gap:24px; flex-wrap:wrap; }
         .panel {
             background: var(--panel-bg); backdrop-filter: blur(12px);
             border: 1px solid var(--border); border-radius: 24px;
             padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-        .group-panel { flex: 1 1 400px; max-height: 80vh; overflow-y: auto; }
-        .bracket-panel { flex: 2 1 800px; display: flex; flex-direction: column; align-items: center; }
+        .group-panel { flex:1 1 400px; max-height:80vh; overflow-y:auto; }
+        .bracket-panel { flex:2 1 800px; display:flex; flex-direction:column; align-items:center; }
         .group-card {
             background: rgba(255,255,255,0.03); border-radius: 12px;
             padding: 12px; border-left: 4px solid var(--gold); margin-bottom: 10px;
         }
-        .group-title { font-weight: bold; color: var(--gold-light); margin-bottom: 8px; }
-        .select-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
-        .select-row label { width: 45px; font-size: 0.85rem; }
+        .group-title { font-weight:bold; color:var(--gold-light); margin-bottom:8px; }
+        .select-row { display:flex; align-items:center; gap:8px; margin:4px 0; }
+        .select-row label { width:45px; font-size:0.85rem; }
         select {
-            flex: 1; padding: 6px 8px; border-radius: 6px;
+            flex:1; padding:6px 8px; border-radius:6px;
             background: #0f2137; color: white; border: 1px solid #4a627a;
         }
-        .error-msg { color: #ff6b6b; font-size: 0.7rem; display: none; }
-        .third-section { margin-top: 16px; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 14px; }
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 6px; }
+        .error-msg { color:#ff6b6b; font-size:0.7rem; display:none; }
+        .third-section { margin-top:16px; background:rgba(0,0,0,0.2); border-radius:12px; padding:14px; }
+        .checkbox-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(130px,1fr)); gap:6px; }
         .checkbox-item {
-            display: flex; align-items: center; gap: 4px; font-size: 0.85rem;
-            background: #0f2137; padding: 4px 8px; border-radius: 6px; cursor: pointer;
+            display:flex; align-items:center; gap:4px; font-size:0.85rem;
+            background: #0f2137; padding:4px 8px; border-radius:6px; cursor:pointer;
         }
         .btn {
-            width: 100%; padding: 12px; background: linear-gradient(135deg, #f0b323, #e5a50a);
-            border: none; border-radius: 14px; font-weight: bold; color: #0a1a2a;
-            cursor: pointer; margin-top: 16px; font-size: 1rem; transition: 0.2s;
+            width:100%; padding:12px; background:linear-gradient(135deg, #f0b323, #e5a50a);
+            border:none; border-radius:14px; font-weight:bold; color:#0a1a2a;
+            cursor:pointer; margin-top:16px; font-size:1rem; transition:0.2s;
         }
-        .btn:hover { background: linear-gradient(135deg, #ffc107, #f0b323); box-shadow: 0 6px 16px rgba(240,179,35,0.4); }
-        #bracketCanvas { width: 100%; height: auto; background: rgba(10,25,45,0.8); border-radius: 16px; border: 1px solid #334155; }
+        .btn:hover { background:linear-gradient(135deg, #ffc107, #f0b323); box-shadow:0 6px 16px rgba(240,179,35,0.4); }
+        #bracketCanvas { width:100%; height:auto; background: rgba(10,25,45,0.8); border-radius:16px; border:1px solid #334155; }
         .hint {
-            color: #ffd966; font-size: 0.9rem; margin-top: 12px; text-align: center;
-            background: rgba(0,0,0,0.3); padding: 6px 16px; border-radius: 20px;
+            color:#ffd966; font-size:0.9rem; margin-top:12px; text-align:center;
+            background:rgba(0,0,0,0.3); padding:6px 16px; border-radius:20px;
         }
         .reset-btn {
-            background: #334155; border: none; color: white; padding: 8px 20px;
-            border-radius: 20px; cursor: pointer; margin-top: 10px; font-size: 0.9rem; transition: 0.2s;
+            background: #334155; border:none; color:white; padding:8px 20px;
+            border-radius:20px; cursor:pointer; margin-top:10px; font-size:0.9rem; transition:0.2s;
         }
         .reset-btn:hover { background: #475569; }
     </style>
 </head>
 <body>
 <div class="app">
-    <div class="header">
-        <h1>⚽ 2026 世界杯 · 实时晋级预测图</h1>
-    </div>
+    <div class="header"><h1>⚽ 2026 世界杯 · 深色错位晋级图</h1></div>
     <div class="main-content">
         <div class="panel group-panel">
             <h2 style="color:#ffd966; margin-bottom:16px;">🌍 小组排名（自动去重）</h2>
@@ -95,8 +81,8 @@
             <div id="groupError" style="color:#ff6b6b; margin-top:10px; font-size:0.9rem;"></div>
         </div>
         <div class="panel bracket-panel">
-            <h2 style="color:#ffd966; margin-bottom:10px;">🏆 淘汰赛路线图（左右半区）</h2>
-            <canvas id="bracketCanvas" width="1200" height="900"></canvas>
+            <h2 style="color:#ffd966; margin-bottom:10px;">🏆 淘汰赛路线图（错位会师）</h2>
+            <canvas id="bracketCanvas" width="1200" height="880"></canvas>
             <div class="hint" id="roundHint">点击球队框选择胜者（再次点击可取消）；后续对阵自动生成</div>
             <button class="reset-btn" id="resetBracketBtn" style="display:none;">↺ 重新预测淘汰赛</button>
         </div>
@@ -106,516 +92,281 @@
 <script>
     (function() {
         const groups = {
-            A: ["墨西哥", "南非", "韩国", "捷克"],
-            B: ["加拿大", "波黑", "卡塔尔", "瑞士"],
-            C: ["巴西", "摩洛哥", "海地", "苏格兰"],
-            D: ["美国", "巴拉圭", "澳大利亚", "土耳其"],
-            E: ["德国", "库拉索", "科特迪瓦", "厄瓜多尔"],
-            F: ["荷兰", "日本", "瑞典", "突尼斯"],
-            G: ["比利时", "埃及", "伊朗", "新西兰"],
-            H: ["西班牙", "佛得角", "沙特", "乌拉圭"],
-            I: ["法国", "塞内加尔", "伊拉克", "挪威"],
-            J: ["阿根廷", "阿尔及利亚", "奥地利", "约旦"],
-            K: ["葡萄牙", "民主刚果", "乌兹别克斯坦", "哥伦比亚"],
-            L: ["英格兰", "克罗地亚", "加纳", "巴拿马"]
+            A:["墨西哥","南非","韩国","捷克"],B:["加拿大","波黑","卡塔尔","瑞士"],C:["巴西","摩洛哥","海地","苏格兰"],D:["美国","巴拉圭","澳大利亚","土耳其"],
+            E:["德国","库拉索","科特迪瓦","厄瓜多尔"],F:["荷兰","日本","瑞典","突尼斯"],G:["比利时","埃及","伊朗","新西兰"],H:["西班牙","佛得角","沙特","乌拉圭"],
+            I:["法国","塞内加尔","伊拉克","挪威"],J:["阿根廷","阿尔及利亚","奥地利","约旦"],K:["葡萄牙","民主刚果","乌兹别克斯坦","哥伦比亚"],L:["英格兰","克罗地亚","加纳","巴拿马"]
         };
-
         const flags = {
-            "墨西哥": "🇲🇽", "南非": "🇿🇦", "韩国": "🇰🇷", "捷克": "🇨🇿",
-            "加拿大": "🇨🇦", "波黑": "🇧🇦", "卡塔尔": "🇶🇦", "瑞士": "🇨🇭",
-            "巴西": "🇧🇷", "摩洛哥": "🇲🇦", "海地": "🇭🇹", "苏格兰": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
-            "美国": "🇺🇸", "巴拉圭": "🇵🇾", "澳大利亚": "🇦🇺", "土耳其": "🇹🇷",
-            "德国": "🇩🇪", "库拉索": "🇨🇼", "科特迪瓦": "🇨🇮", "厄瓜多尔": "🇪🇨",
-            "荷兰": "🇳🇱", "日本": "🇯🇵", "瑞典": "🇸🇪", "突尼斯": "🇹🇳",
-            "比利时": "🇧🇪", "埃及": "🇪🇬", "伊朗": "🇮🇷", "新西兰": "🇳🇿",
-            "西班牙": "🇪🇸", "佛得角": "🇨🇻", "沙特": "🇸🇦", "乌拉圭": "🇺🇾",
-            "法国": "🇫🇷", "塞内加尔": "🇸🇳", "伊拉克": "🇮🇶", "挪威": "🇳🇴",
-            "阿根廷": "🇦🇷", "阿尔及利亚": "🇩🇿", "奥地利": "🇦🇹", "约旦": "🇯🇴",
-            "葡萄牙": "🇵🇹", "民主刚果": "🇨🇩", "乌兹别克斯坦": "🇺🇿", "哥伦比亚": "🇨🇴",
-            "英格兰": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "克罗地亚": "🇭🇷", "加纳": "🇬🇭", "巴拿马": "🇵🇦"
+            "墨西哥":"🇲🇽","南非":"🇿🇦","韩国":"🇰🇷","捷克":"🇨🇿","加拿大":"🇨🇦","波黑":"🇧🇦","卡塔尔":"🇶🇦","瑞士":"🇨🇭","巴西":"🇧🇷","摩洛哥":"🇲🇦","海地":"🇭🇹","苏格兰":"🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "美国":"🇺🇸","巴拉圭":"🇵🇾","澳大利亚":"🇦🇺","土耳其":"🇹🇷","德国":"🇩🇪","库拉索":"🇨🇼","科特迪瓦":"🇨🇮","厄瓜多尔":"🇪🇨","荷兰":"🇳🇱","日本":"🇯🇵","瑞典":"🇸🇪","突尼斯":"🇹🇳",
+            "比利时":"🇧🇪","埃及":"🇪🇬","伊朗":"🇮🇷","新西兰":"🇳🇿","西班牙":"🇪🇸","佛得角":"🇨🇻","沙特":"🇸🇦","乌拉圭":"🇺🇾","法国":"🇫🇷","塞内加尔":"🇸🇳","伊拉克":"🇮🇶","挪威":"🇳🇴",
+            "阿根廷":"🇦🇷","阿尔及利亚":"🇩🇿","奥地利":"🇦🇹","约旦":"🇯🇴","葡萄牙":"🇵🇹","民主刚果":"🇨🇩","乌兹别克斯坦":"🇺🇿","哥伦比亚":"🇨🇴","英格兰":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","克罗地亚":"🇭🇷","加纳":"🇬🇭","巴拿马":"🇵🇦"
         };
-
-        function withFlag(name) {
-            return (flags[name] || "") + " " + name;
-        }
+        function withFlag(n){ return (flags[n]||"")+" "+n; }
 
         const bracketSlots = [
-            { team1: {type:'first',group:'A'}, team2: {type:'third',slot:0} },
-            { team1: {type:'second',group:'C'}, team2: {type:'second',group:'D'} },
-            { team1: {type:'first',group:'E'}, team2: {type:'second',group:'A'} },
-            { team1: {type:'first',group:'B'}, team2: {type:'third',slot:1} },
-            { team1: {type:'first',group:'F'}, team2: {type:'second',group:'B'} },
-            { team1: {type:'first',group:'C'}, team2: {type:'third',slot:2} },
-            { team1: {type:'first',group:'J'}, team2: {type:'second',group:'G'} },
-            { team1: {type:'first',group:'D'}, team2: {type:'third',slot:3} },
-            { team1: {type:'first',group:'K'}, team2: {type:'third',slot:4} },
-            { team1: {type:'second',group:'E'}, team2: {type:'second',group:'F'} },
-            { team1: {type:'first',group:'H'}, team2: {type:'second',group:'K'} },
-            { team1: {type:'first',group:'L'}, team2: {type:'third',slot:5} },
-            { team1: {type:'first',group:'G'}, team2: {type:'second',group:'L'} },
-            { team1: {type:'first',group:'I'}, team2: {type:'second',group:'H'} },
-            { team1: {type:'second',group:'I'}, team2: {type:'second',group:'J'} },
-            { team1: {type:'third',slot:6}, team2: {type:'third',slot:7} }
+            {team1:{type:'first',group:'A'},team2:{type:'third',slot:0}},{team1:{type:'second',group:'C'},team2:{type:'second',group:'D'}},
+            {team1:{type:'first',group:'E'},team2:{type:'second',group:'A'}},{team1:{type:'first',group:'B'},team2:{type:'third',slot:1}},
+            {team1:{type:'first',group:'F'},team2:{type:'second',group:'B'}},{team1:{type:'first',group:'C'},team2:{type:'third',slot:2}},
+            {team1:{type:'first',group:'J'},team2:{type:'second',group:'G'}},{team1:{type:'first',group:'D'},team2:{type:'third',slot:3}},
+            {team1:{type:'first',group:'K'},team2:{type:'third',slot:4}},{team1:{type:'second',group:'E'},team2:{type:'second',group:'F'}},
+            {team1:{type:'first',group:'H'},team2:{type:'second',group:'K'}},{team1:{type:'first',group:'L'},team2:{type:'third',slot:5}},
+            {team1:{type:'first',group:'G'},team2:{type:'second',group:'L'}},{team1:{type:'first',group:'I'},team2:{type:'second',group:'H'}},
+            {team1:{type:'second',group:'I'},team2:{type:'second',group:'J'}},{team1:{type:'third',slot:6},team2:{type:'third',slot:7}}
         ];
+        const r16Pairs=[[0,1],[2,3],[4,5],[6,7],[8,9],[10,11],[12,13],[14,15]];
+        const qfPairs=[[0,1],[2,3],[4,5],[6,7]];
+        const sfPairs=[[0,1],[2,3]];
+        const finalPair=[0,1];
 
-        const r16Pairs = [[0,1],[2,3],[4,5],[6,7],[8,9],[10,11],[12,13],[14,15]];
-        const qfPairs  = [[0,1],[2,3],[4,5],[6,7]];
-        const sfPairs  = [[0,1],[2,3]];
-        const finalPair = [0,1];
+        let allMatches={R32:[],R16:[],QF:[],SF:[],Final:[]}, matchups=[], canvas, ctx;
 
-        let allMatches = { R32:[], R16:[], QF:[], SF:[], Final:[] };
-        let matchups = [];
-        let canvas, ctx, matchCoords = {};
+        if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){if(typeof r==='number')r={tl:r,tr:r,br:r,bl:r};this.beginPath();this.moveTo(x+r.tl,y);this.lineTo(x+w-r.tr,y);this.quadraticCurveTo(x+w,y,x+w,y+r.tr);this.lineTo(x+w,y+h-r.br);this.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);this.lineTo(x+r.bl,y+h);this.quadraticCurveTo(x,y+h,x,y+h-r.bl);this.lineTo(x,y+r.tl);this.quadraticCurveTo(x,y,x+r.tl,y);this.closePath();}}
 
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-                if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
-                this.beginPath();
-                this.moveTo(x + r.tl, y);
-                this.lineTo(x + w - r.tr, y);
-                this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
-                this.lineTo(x + w, y + h - r.br);
-                this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
-                this.lineTo(x + r.bl, y + h);
-                this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
-                this.lineTo(x, y + r.tl);
-                this.quadraticCurveTo(x, y, x + r.tl, y);
-                this.closePath();
-            };
-        }
-
-        function autoFixDuplicates(group) {
-            const selected = [];
-            for (let pos = 1; pos <= 4; pos++) {
-                selected.push(document.getElementById(`pos${pos}_${group}`).value);
-            }
-            const seen = {};
-            for (let i = 0; i < selected.length; i++) {
-                const val = selected[i];
-                if (seen[val] !== undefined) {
-                    // 找到未出现的球队
-                    const available = groups[group].filter(t => !selected.includes(t));
-                    if (available.length > 0) {
-                        // 修改触发下拉框之外的那个
-                        const currentSel = document.activeElement;
-                        let otherIdx = (document.getElementById(`pos${i+1}_${group}`) === currentSel) ? seen[val] : i;
-                        document.getElementById(`pos${otherIdx+1}_${group}`).value = available[0];
-                        return autoFixDuplicates(group); // 递归修正
-                    }
-                } else {
-                    seen[val] = i;
+        function autoFixDuplicates(group){
+            const s=[]; for(let p=1;p<=4;p++) s.push(document.getElementById(`pos${p}_${group}`).value);
+            const seen={}; for(let i=0;i<s.length;i++){ if(seen[s[i]]!==undefined){
+                const avail=groups[group].filter(t=>!s.includes(t)); if(avail.length>0){
+                    const cur=document.activeElement;
+                    const otherIdx=(document.getElementById(`pos${i+1}_${group}`)===cur)?seen[s[i]]:i;
+                    document.getElementById(`pos${otherIdx+1}_${group}`).value=avail[0];
+                    return autoFixDuplicates(group);
                 }
-            }
+            }else seen[s[i]]=i; }
         }
-
-        function buildGroupUI() {
-            const groupsDiv = document.getElementById('groupsContainer');
-            const thirdsDiv = document.getElementById('thirdCheckboxes');
-            groupsDiv.innerHTML = '';
-            thirdsDiv.innerHTML = '';
-
-            for (let [group, teams] of Object.entries(groups)) {
-                const card = document.createElement('div');
-                card.className = 'group-card';
-                card.innerHTML = `<div class="group-title">${group} 组</div>`;
-
-                for (let pos = 1; pos <= 4; pos++) {
-                    const row = document.createElement('div');
-                    row.className = 'select-row';
-                    const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : '4️⃣';
-                    row.innerHTML = `<label>${medal}</label>`;
-                    const sel = document.createElement('select');
-                    sel.id = `pos${pos}_${group}`;
-                    teams.forEach(t => sel.innerHTML += `<option value="${t}">${withFlag(t)}</option>`);
-                    sel.selectedIndex = pos - 1;
-                    row.appendChild(sel);
-                    card.appendChild(row);
+        function buildGroupUI(){
+            const gd=document.getElementById('groupsContainer'), td=document.getElementById('thirdCheckboxes');
+            gd.innerHTML=''; td.innerHTML='';
+            for(let [group,teams] of Object.entries(groups)){
+                const card=document.createElement('div'); card.className='group-card';
+                card.innerHTML=`<div class="group-title">${group} 组</div>`;
+                for(let pos=1;pos<=4;pos++){
+                    const row=document.createElement('div'); row.className='select-row';
+                    const medal=pos===1?'🥇':pos===2?'🥈':pos===3?'🥉':'4️⃣';
+                    row.innerHTML=`<label>${medal}</label>`;
+                    const sel=document.createElement('select'); sel.id=`pos${pos}_${group}`;
+                    teams.forEach(t=>sel.innerHTML+=`<option value="${t}">${withFlag(t)}</option>`);
+                    sel.selectedIndex=pos-1; row.appendChild(sel); card.appendChild(row);
                 }
-
-                const err = document.createElement('div');
-                err.className = 'error-msg';
-                err.id = `err_${group}`;
-                card.appendChild(err);
-                groupsDiv.appendChild(card);
-
-                const cbLabel = document.createElement('label');
-                cbLabel.className = 'checkbox-item';
-                cbLabel.innerHTML = `<input type="checkbox" id="third_${group}" value="${group}"> <span id="thirdLabel_${group}">${group}组第三</span>`;
-                thirdsDiv.appendChild(cbLabel);
+                const err=document.createElement('div'); err.className='error-msg'; err.id=`err_${group}`; card.appendChild(err);
+                gd.appendChild(card);
+                const cb=document.createElement('label'); cb.className='checkbox-item';
+                cb.innerHTML=`<input type="checkbox" id="third_${group}" value="${group}"> <span id="thirdLabel_${group}">${group}组第三</span>`;
+                td.appendChild(cb);
             }
-
-            document.querySelectorAll('#thirdCheckboxes input').forEach((cb, idx) => { cb.checked = idx < 8; });
-            document.querySelectorAll('select').forEach(sel => {
-                sel.addEventListener('change', function() {
-                    const groupId = this.id.split('_')[1];
-                    autoFixDuplicates(groupId);
-                    updateThirdLabels();
-                });
-            });
+            document.querySelectorAll('#thirdCheckboxes input').forEach((cb,i)=>cb.checked=i<8);
+            document.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',function(){
+                autoFixDuplicates(this.id.split('_')[1]); updateThirdLabels();
+            }));
             updateThirdLabels();
         }
-
-        function updateThirdLabels() {
-            for (let group of Object.keys(groups)) {
-                const thirdTeam = document.getElementById(`pos3_${group}`)?.value;
-                const label = document.getElementById(`thirdLabel_${group}`);
-                if (label && thirdTeam) label.textContent = `${group}组第三: ${withFlag(thirdTeam)}`;
+        function updateThirdLabels(){
+            for(let g of Object.keys(groups)){
+                const t=document.getElementById(`pos3_${g}`)?.value;
+                const l=document.getElementById(`thirdLabel_${g}`);
+                if(l&&t) l.textContent=`${g}组第三: ${withFlag(t)}`;
             }
         }
-
-        function getSelectedData() {
-            const firstPicks = {}, secondPicks = {}, thirdTeamsAll = {};
-            for (let g of Object.keys(groups)) {
-                firstPicks[g] = document.getElementById(`pos1_${g}`).value;
-                secondPicks[g] = document.getElementById(`pos2_${g}`).value;
-                thirdTeamsAll[g] = document.getElementById(`pos3_${g}`).value;
+        function getSelectedData(){
+            const f={},s={},t={};
+            for(let g of Object.keys(groups)){
+                f[g]=document.getElementById(`pos1_${g}`).value; s[g]=document.getElementById(`pos2_${g}`).value; t[g]=document.getElementById(`pos3_${g}`).value;
             }
-            const selectedThirdGroups = [];
-            document.querySelectorAll('#thirdCheckboxes input:checked').forEach(cb => selectedThirdGroups.push(cb.value));
-            const thirdTeams = selectedThirdGroups.map(g => thirdTeamsAll[g]);
-            return { firstPicks, secondPicks, thirdTeams };
+            const sel=[]; document.querySelectorAll('#thirdCheckboxes input:checked').forEach(cb=>sel.push(cb.value));
+            const tt=sel.map(g=>t[g]); return {firstPicks:f, secondPicks:s, thirdTeams:tt};
         }
-
-        function buildMatchups(firstPicks, secondPicks, thirdTeams) {
-            return bracketSlots.map(s => {
-                const get = (obj) => {
-                    if (obj.type === 'first') return firstPicks[obj.group];
-                    if (obj.type === 'second') return secondPicks[obj.group];
-                    return thirdTeams[obj.slot] || '待定';
-                };
-                return [get(s.team1), get(s.team2)];
-            });
+        function buildMatchups(f,s,tt){ return bracketSlots.map(sl=>{
+            const get=obj=>obj.type==='first'?f[obj.group]:obj.type==='second'?s[obj.group]:tt[obj.slot]||'待定';
+            return [get(sl.team1),get(sl.team2)];
+        })}
+        function initBracket(){
+            canvas=document.getElementById('bracketCanvas'); ctx=canvas.getContext('2d');
+            canvas.addEventListener('click',onCanvasClick);
+            document.getElementById('resetBracketBtn').addEventListener('click',resetBracket);
         }
-
-        function initBracket() {
-            canvas = document.getElementById('bracketCanvas');
-            ctx = canvas.getContext('2d');
-            canvas.addEventListener('click', onCanvasClick);
-            document.getElementById('resetBracketBtn').addEventListener('click', resetBracket);
-        }
-
-        function propagateWinners() {
-            // 从R32生成后续轮次
-            const genRound = (fromRound, toRound, pairs) => {
-                for (let i = 0; i < pairs.length; i++) {
-                    const [a, b] = pairs[i];
-                    const m1 = allMatches[fromRound][a], m2 = allMatches[fromRound][b];
-                    if (m1?.winner && m2?.winner) {
-                        if (!allMatches[toRound][i]) {
-                            allMatches[toRound][i] = {
-                                team1: m1.winner,
-                                team2: m2.winner,
-                                winner: null,
-                                src1: { round: fromRound, index: a },
-                                src2: { round: fromRound, index: b }
-                            };
-                        } else {
-                            allMatches[toRound][i].team1 = m1.winner;
-                            allMatches[toRound][i].team2 = m2.winner;
-                            if (allMatches[toRound][i].winner && allMatches[toRound][i].winner !== m1.winner && allMatches[toRound][i].winner !== m2.winner) {
-                                allMatches[toRound][i].winner = null;
-                            }
-                        }
-                    } else {
-                        allMatches[toRound][i] = null;
-                    }
+        function propagateWinners(){
+            const gen=(from,to,pairs)=>{
+                for(let i=0;i<pairs.length;i++){
+                    const [a,b]=pairs[i], m1=allMatches[from][a], m2=allMatches[from][b];
+                    if(m1?.winner&&m2?.winner){
+                        if(!allMatches[to][i]) allMatches[to][i]={team1:m1.winner,team2:m2.winner,winner:null,src1:{round:from,index:a},src2:{round:from,index:b}};
+                        else{ allMatches[to][i].team1=m1.winner; allMatches[to][i].team2=m2.winner; if(allMatches[to][i].winner&&allMatches[to][i].winner!==m1.winner&&allMatches[to][i].winner!==m2.winner) allMatches[to][i].winner=null; }
+                    }else allMatches[to][i]=null;
                 }
             };
-            genRound('R32', 'R16', r16Pairs);
-            genRound('R16', 'QF', qfPairs);
-            genRound('QF', 'SF', sfPairs);
-            const [a, b] = finalPair;
-            const m1 = allMatches.SF[a], m2 = allMatches.SF[b];
-            if (m1?.winner && m2?.winner) {
-                allMatches.Final[0] = {
-                    team1: m1.winner,
-                    team2: m2.winner,
-                    winner: null,
-                    src1: { round: 'SF', index: a },
-                    src2: { round: 'SF', index: b }
-                };
-            } else {
-                allMatches.Final[0] = null;
-            }
+            gen('R32','R16',r16Pairs); gen('R16','QF',qfPairs); gen('QF','SF',sfPairs);
+            const [a,b]=finalPair, m1=allMatches.SF[a], m2=allMatches.SF[b];
+            if(m1?.winner&&m2?.winner) allMatches.Final[0]={team1:m1.winner,team2:m2.winner,winner:null,src1:{round:'SF',index:a},src2:{round:'SF',index:b}};
+            else allMatches.Final[0]=null;
         }
 
-        // 左右对称坐标
-        function computeCoords() {
-            const cw = canvas.width, ch = canvas.height;
-            const boxW = 130, boxH = 24;
-            const championW = 180, championH = 52;
-            const centerX = cw / 2, centerY = ch / 2;
-            const leftSFx = centerX - championW/2 - 60 - boxW;
-            const rightSFx = centerX + championW/2 + 60;
-            const leftR32x = 20;
-            const colStep = 180;
-            const usableH = ch - 120;
-            const startY = 60;
+        // 偏移80px，深色背景适配
+        function computeCoords(){
+            const cw=canvas.width, ch=canvas.height, boxW=130, boxH=24;
+            const championW=180, championH=52;
+            const centerX=cw/2, centerY=ch/2;
+            const leftR32x=20, rightR32x=cw-20-boxW;
+            const colStep=170;
+            const startY=70, endY=ch-70, totalH=endY-startY;
 
-            const leftR32 = [], leftR16 = [], leftQF = [], leftSF = [];
-            const rightR32 = [], rightR16 = [], rightQF = [], rightSF = [];
+            const leftR32=[],leftR16=[],leftQF=[],leftSF=[];
+            const rightR32=[],rightR16=[],rightQF=[],rightSF=[];
 
-            for (let i = 0; i < 8; i++) {
-                const cy = startY + i * (usableH/8) + usableH/16;
-                leftR32.push({ x: leftR32x, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
-            }
-            for (let i = 0; i < 4; i++) {
-                const cy = startY + i * (usableH/4) + usableH/8;
-                leftR16.push({ x: leftR32x + colStep, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
-            }
-            for (let i = 0; i < 2; i++) {
-                const cy = startY + i * (usableH/2) + usableH/4;
-                leftQF.push({ x: leftR32x + colStep*2, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
-            }
-            leftSF.push({ x: leftSFx, y: centerY - boxH, centerY, w: boxW, h: boxH });
+            for(let i=0;i<8;i++){ const cy=startY+i*(totalH/8)+totalH/16; leftR32.push({x:leftR32x,y:cy-boxH,centerY:cy,w:boxW,h:boxH}); }
+            for(let i=0;i<4;i++){ const cy=startY+i*(totalH/4)+totalH/8; leftR16.push({x:leftR32x+colStep,y:cy-boxH,centerY:cy,w:boxW,h:boxH}); }
+            for(let i=0;i<2;i++){ const cy=startY+i*(totalH/2)+totalH/4; leftQF.push({x:leftR32x+colStep*2,y:cy-boxH,centerY:cy,w:boxW,h:boxH}); }
+            const leftSFy=centerY-boxH-80;
+            leftSF.push({x:leftR32x+colStep*3, y:leftSFy, centerY:leftSFy+boxH, w:boxW, h:boxH});
 
-            const rightR32x = cw - 20 - boxW;
-            for (let i = 0; i < 8; i++) {
-                const cy = startY + i * (usableH/8) + usableH/16;
-                rightR32.push({ x: rightR32x, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
-            }
-            for (let i = 0; i < 4; i++) {
-                const cy = startY + i * (usableH/4) + usableH/8;
-                rightR16.push({ x: rightR32x - colStep, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
-            }
-            for (let i = 0; i < 2; i++) {
-                const cy = startY + i * (usableH/2) + usableH/4;
-                rightQF.push({ x: rightR32x - colStep*2, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
-            }
-            rightSF.push({ x: rightSFx, y: centerY - boxH, centerY, w: boxW, h: boxH });
+            for(let i=0;i<8;i++){ const cy=startY+i*(totalH/8)+totalH/16; rightR32.push({x:rightR32x,y:cy-boxH,centerY:cy,w:boxW,h:boxH}); }
+            for(let i=0;i<4;i++){ const cy=startY+i*(totalH/4)+totalH/8; rightR16.push({x:rightR32x-colStep,y:cy-boxH,centerY:cy,w:boxW,h:boxH}); }
+            for(let i=0;i<2;i++){ const cy=startY+i*(totalH/2)+totalH/4; rightQF.push({x:rightR32x-colStep*2,y:cy-boxH,centerY:cy,w:boxW,h:boxH}); }
+            const rightSFy=centerY+80-boxH;
+            rightSF.push({x:rightR32x-colStep*3, y:rightSFy, centerY:rightSFy+boxH, w:boxW, h:boxH});
 
-            const championX = centerX - championW/2;
-            const championY = centerY - championH/2;
-            const champion = { x: championX, y: championY, centerY, w: championW, h: championH };
-
-            return { leftR32, leftR16, leftQF, leftSF,
-                     rightR32, rightR16, rightQF, rightSF,
-                     champion };
+            const champion={x:centerX-championW/2, y:centerY-championH/2, centerY, w:championW, h:championH};
+            return {leftR32,leftR16,leftQF,leftSF, rightR32,rightR16,rightQF,rightSF, champion};
         }
 
-        function drawBracket() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const coords = computeCoords();
+        function drawBracket(){
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const coords=computeCoords();
             propagateWinners();
 
-            function drawLinks(fromCoords, toCoords, pairs, direction) {
-                for (let i = 0; i < pairs.length; i++) {
-                    const [a, b] = pairs[i];
-                    const p1 = fromCoords[a], p2 = fromCoords[b];
-                    const target = toCoords[i];
-                    const avgY = (p1.centerY + p2.centerY) / 2;
-                    ctx.beginPath();
-                    ctx.strokeStyle = '#5a7a9a';
-                    ctx.lineWidth = 1.5;
-                    if (direction === 'left') {
-                        ctx.moveTo(p1.x + p1.w, p1.centerY);
-                        ctx.lineTo(p1.x + p1.w + 12, p1.centerY);
-                        ctx.lineTo(p1.x + p1.w + 12, avgY);
-                        ctx.lineTo(target.x, avgY);
+            function drawLinks(from,to,pairs,direction){
+                for(let i=0;i<pairs.length;i++){
+                    const [a,b]=pairs[i], p1=from[a],p2=from[b], t=to[i], avgY=(p1.centerY+p2.centerY)/2;
+                    ctx.beginPath(); ctx.strokeStyle='#5a7a9a'; ctx.lineWidth=1.5;
+                    if(direction==='left'){
+                        ctx.moveTo(p1.x+p1.w,p1.centerY); ctx.lineTo(p1.x+p1.w+12,p1.centerY); ctx.lineTo(p1.x+p1.w+12,avgY); ctx.lineTo(t.x,avgY);
                         ctx.stroke();
-                        ctx.beginPath();
-                        ctx.moveTo(p2.x + p2.w, p2.centerY);
-                        ctx.lineTo(p2.x + p2.w + 12, p2.centerY);
-                        ctx.lineTo(p2.x + p2.w + 12, avgY);
-                        ctx.stroke();
-                    } else {
-                        ctx.moveTo(p1.x, p1.centerY);
-                        ctx.lineTo(p1.x - 12, p1.centerY);
-                        ctx.lineTo(p1.x - 12, avgY);
-                        ctx.lineTo(target.x + target.w, avgY);
-                        ctx.stroke();
-                        ctx.beginPath();
-                        ctx.moveTo(p2.x, p2.centerY);
-                        ctx.lineTo(p2.x - 12, p2.centerY);
-                        ctx.lineTo(p2.x - 12, avgY);
-                        ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(p2.x+p2.w,p2.centerY); ctx.lineTo(p2.x+p2.w+12,p2.centerY); ctx.lineTo(p2.x+p2.w+12,avgY); ctx.stroke();
+                    }else{
+                        ctx.moveTo(p1.x,p1.centerY); ctx.lineTo(p1.x-12,p1.centerY); ctx.lineTo(p1.x-12,avgY); ctx.lineTo(t.x+t.w,avgY); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(p2.x,p2.centerY); ctx.lineTo(p2.x-12,p2.centerY); ctx.lineTo(p2.x-12,avgY); ctx.stroke();
                     }
                 }
             }
+            drawLinks(coords.leftR32,coords.leftR16,[[0,1],[2,3],[4,5],[6,7]],'left');
+            drawLinks(coords.leftR16,coords.leftQF,[[0,1],[2,3]],'left');
+            drawLinks(coords.leftQF,coords.leftSF,[[0,1]],'left');
 
-            drawLinks(coords.leftR32, coords.leftR16, [[0,1],[2,3],[4,5],[6,7]], 'left');
-            drawLinks(coords.leftR16, coords.leftQF, [[0,1],[2,3]], 'left');
-            drawLinks(coords.leftQF, coords.leftSF, [[0,1]], 'left');
+            drawLinks(coords.rightR32,coords.rightR16,[[0,1],[2,3],[4,5],[6,7]],'right');
+            drawLinks(coords.rightR16,coords.rightQF,[[0,1],[2,3]],'right');
+            drawLinks(coords.rightQF,coords.rightSF,[[0,1]],'right');
 
-            drawLinks(coords.rightR32, coords.rightR16, [[0,1],[2,3],[4,5],[6,7]], 'right');
-            drawLinks(coords.rightR16, coords.rightQF, [[0,1],[2,3]], 'right');
-            drawLinks(coords.rightQF, coords.rightSF, [[0,1]], 'right');
-
-            const lsf = coords.leftSF[0], rsf = coords.rightSF[0], champ = coords.champion;
-            ctx.beginPath(); ctx.strokeStyle = '#5a7a9a'; ctx.lineWidth = 2;
-            ctx.moveTo(lsf.x + lsf.w, lsf.centerY);
+            const lsf=coords.leftSF[0], rsf=coords.rightSF[0], champ=coords.champion;
+            ctx.beginPath(); ctx.strokeStyle='#5a7a9a'; ctx.lineWidth=2;
+            ctx.moveTo(lsf.x+lsf.w, lsf.centerY);
             ctx.lineTo(champ.x, lsf.centerY);
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(rsf.x, rsf.centerY);
-            ctx.lineTo(champ.x + champ.w, rsf.centerY);
+            ctx.lineTo(champ.x+champ.w, rsf.centerY);
             ctx.stroke();
 
-            function drawMatchBox(coord, match) {
-                if (!match) {
-                    ctx.fillStyle = '#102b3f';
-                    ctx.strokeStyle = '#4a627a';
-                    ctx.lineWidth = 1.2;
-                    ctx.beginPath(); ctx.roundRect(coord.x, coord.y, coord.w, coord.h*2, 5);
-                    ctx.fill(); ctx.stroke();
-                    ctx.fillStyle = '#aaa';
-                    ctx.font = '11px "Segoe UI"'; ctx.textAlign = 'center';
-                    ctx.fillText('?', coord.x + coord.w/2, coord.y + coord.h + 6);
+            function drawBox(coord,match){
+                if(!match){
+                    ctx.fillStyle='#102b3f'; ctx.strokeStyle='#4a627a'; ctx.lineWidth=1.2;
+                    ctx.beginPath(); ctx.roundRect(coord.x,coord.y,coord.w,coord.h*2,5); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle='#aaa'; ctx.font='11px "Segoe UI"'; ctx.textAlign='center'; ctx.fillText('?',coord.x+coord.w/2,coord.y+coord.h+6);
                     return;
                 }
-                const t1 = withFlag(match.team1), t2 = withFlag(match.team2);
-                const c = coord;
-                ctx.fillStyle = (match.winner === match.team1) ? '#1a472a' : '#102b3f';
-                ctx.strokeStyle = match.winner ? '#4ade80' : '#f0b323';
-                ctx.lineWidth = 1.5;
-                ctx.beginPath(); ctx.roundRect(c.x, c.y, c.w, c.h, 5);
-                ctx.fill(); ctx.stroke();
-                ctx.fillStyle = '#f1f5f9';
-                ctx.font = '11px "Segoe UI"'; ctx.textAlign = 'center';
-                ctx.fillText(truncate(t1, 18), c.x + c.w/2, c.y + 16);
+                const t1=withFlag(match.team1), t2=withFlag(match.team2), c=coord;
+                ctx.fillStyle=(match.winner===match.team1)?'#1a472a':'#102b3f';
+                ctx.strokeStyle=match.winner?'#4ade80':'#f0b323'; ctx.lineWidth=1.5;
+                ctx.beginPath(); ctx.roundRect(c.x,c.y,c.w,c.h,5); ctx.fill(); ctx.stroke();
+                ctx.fillStyle='#f1f5f9'; ctx.font='11px "Segoe UI"'; ctx.textAlign='center'; ctx.fillText(truncate(t1,18),c.x+c.w/2,c.y+16);
 
-                ctx.fillStyle = (match.winner === match.team2) ? '#1a472a' : '#102b3f';
-                ctx.beginPath(); ctx.roundRect(c.x, c.y + c.h, c.w, c.h, 5);
-                ctx.fill(); ctx.stroke();
-                ctx.fillStyle = '#f1f5f9';
-                ctx.fillText(truncate(t2, 18), c.x + c.w/2, c.y + c.h + 16);
+                ctx.fillStyle=(match.winner===match.team2)?'#1a472a':'#102b3f';
+                ctx.beginPath(); ctx.roundRect(c.x,c.y+c.h,c.w,c.h,5); ctx.fill(); ctx.stroke();
+                ctx.fillStyle='#f1f5f9'; ctx.fillText(truncate(t2,18),c.x+c.w/2,c.y+c.h+16);
 
-                if (match.winner) {
-                    ctx.fillStyle = '#4ade80';
-                    ctx.font = 'bold 10px';
-                    ctx.fillText('✔', c.x + c.w/2, c.y + c.h + 10);
-                } else {
-                    ctx.fillStyle = '#ffd966';
-                    ctx.font = 'bold 8px';
-                    ctx.fillText('VS', c.x + c.w/2, c.y + c.h + 10);
-                }
+                if(match.winner){ ctx.fillStyle='#4ade80'; ctx.font='bold 10px'; ctx.fillText('✔',c.x+c.w/2,c.y+c.h+10); }
+                else{ ctx.fillStyle='#ffd966'; ctx.font='bold 8px'; ctx.fillText('VS',c.x+c.w/2,c.y+c.h+10); }
             }
 
-            // 左半区
-            for (let i = 0; i < 8; i++) drawMatchBox(coords.leftR32[i], allMatches.R32[i]);
-            for (let i = 0; i < 4; i++) drawMatchBox(coords.leftR16[i], allMatches.R16[i]);
-            for (let i = 0; i < 2; i++) drawMatchBox(coords.leftQF[i], allMatches.QF[i]);
-            drawMatchBox(coords.leftSF[0], allMatches.SF[0]);
+            for(let i=0;i<8;i++) drawBox(coords.leftR32[i], allMatches.R32[i]);
+            for(let i=0;i<4;i++) drawBox(coords.leftR16[i], allMatches.R16[i]);
+            for(let i=0;i<2;i++) drawBox(coords.leftQF[i], allMatches.QF[i]);
+            drawBox(coords.leftSF[0], allMatches.SF[0]);
 
-            // 右半区
-            for (let i = 0; i < 8; i++) drawMatchBox(coords.rightR32[i], allMatches.R32[i+8]);
-            for (let i = 0; i < 4; i++) drawMatchBox(coords.rightR16[i], allMatches.R16[i+4]);
-            for (let i = 0; i < 2; i++) drawMatchBox(coords.rightQF[i], allMatches.QF[i+2]);
-            drawMatchBox(coords.rightSF[0], allMatches.SF[1]);
+            for(let i=0;i<8;i++) drawBox(coords.rightR32[i], allMatches.R32[i+8]);
+            for(let i=0;i<4;i++) drawBox(coords.rightR16[i], allMatches.R16[i+4]);
+            for(let i=0;i<2;i++) drawBox(coords.rightQF[i], allMatches.QF[i+2]);
+            drawBox(coords.rightSF[0], allMatches.SF[1]);
 
-            // 冠军框
-            const finalMatch = allMatches.Final[0];
-            if (finalMatch) {
-                const c = coords.champion;
-                ctx.fillStyle = '#0a1a2a';
-                ctx.strokeStyle = finalMatch.winner ? '#ffd966' : '#f0b323';
-                ctx.lineWidth = finalMatch.winner ? 3 : 2;
-                ctx.beginPath(); ctx.roundRect(c.x, c.y, c.w, c.h, 12);
-                ctx.fill(); ctx.stroke();
-
-                if (finalMatch.winner) {
-                    ctx.fillStyle = '#f0b323';
-                    ctx.font = 'bold 16px "Segoe UI"';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('🏆 ' + withFlag(finalMatch.winner), c.x + c.w/2, c.y + c.h/2 + 6);
-                } else {
-                    ctx.fillStyle = '#f1f5f9';
-                    ctx.font = '13px "Segoe UI"';
-                    ctx.fillText(withFlag(finalMatch.team1) + '  vs  ' + withFlag(finalMatch.team2), c.x + c.w/2, c.y + c.h/2 + 6);
-                }
+            const final=allMatches.Final[0];
+            if(final){
+                const c=coords.champion;
+                ctx.fillStyle='#0a1a2a'; ctx.strokeStyle=final.winner?'#ffd966':'#f0b323'; ctx.lineWidth=final.winner?3:2;
+                ctx.beginPath(); ctx.roundRect(c.x,c.y,c.w,c.h,12); ctx.fill(); ctx.stroke();
+                if(final.winner){ ctx.fillStyle='#f0b323'; ctx.font='bold 16px "Segoe UI"'; ctx.textAlign='center'; ctx.fillText('🏆 '+withFlag(final.winner),c.x+c.w/2,c.y+c.h/2+6); }
+                else{ ctx.fillStyle='#f1f5f9'; ctx.font='13px "Segoe UI"'; ctx.fillText(withFlag(final.team1)+'  vs  '+withFlag(final.team2),c.x+c.w/2,c.y+c.h/2+6); }
             }
-
-            const hint = document.getElementById('roundHint');
-            if (finalMatch?.winner) hint.textContent = '🎉 冠军诞生！点击任意已选胜者可取消';
-            else hint.textContent = '👆 点击球队框选择胜者（再次点击可取消）；后续对阵自动生成';
+            const hint=document.getElementById('roundHint');
+            if(final?.winner) hint.textContent='🎉 冠军诞生！点击任意已选胜者可取消';
+            else hint.textContent='👆 点击球队框选择胜者（再次点击可取消）；后续对阵自动生成';
         }
+        function truncate(str,max){ return str.length>max?str.slice(0,max-1)+'…':str; }
 
-        function truncate(str, max) {
-            return str.length > max ? str.slice(0, max-1) + '…' : str;
-        }
+        function onCanvasClick(e){
+            const rect=canvas.getBoundingClientRect(), scaleX=canvas.width/rect.width, scaleY=canvas.height/rect.height;
+            const mx=(e.clientX-rect.left)*scaleX, my=(e.clientY-rect.top)*scaleY;
+            const coords=computeCoords();
+            const clickables=[];
+            for(let i=0;i<8;i++) clickables.push({c:coords.leftR32[i],m:allMatches.R32[i],r:'R32',idx:i});
+            for(let i=0;i<4;i++) clickables.push({c:coords.leftR16[i],m:allMatches.R16[i],r:'R16',idx:i});
+            for(let i=0;i<2;i++) clickables.push({c:coords.leftQF[i],m:allMatches.QF[i],r:'QF',idx:i});
+            if(allMatches.SF[0]) clickables.push({c:coords.leftSF[0],m:allMatches.SF[0],r:'SF',idx:0});
+            for(let i=0;i<8;i++) clickables.push({c:coords.rightR32[i],m:allMatches.R32[i+8],r:'R32',idx:i+8});
+            for(let i=0;i<4;i++) clickables.push({c:coords.rightR16[i],m:allMatches.R16[i+4],r:'R16',idx:i+4});
+            for(let i=0;i<2;i++) clickables.push({c:coords.rightQF[i],m:allMatches.QF[i+2],r:'QF',idx:i+2});
+            if(allMatches.SF[1]) clickables.push({c:coords.rightSF[0],m:allMatches.SF[1],r:'SF',idx:1});
+            if(allMatches.Final[0]&&allMatches.Final[0].team1!=='?') clickables.push({c:coords.champion,m:allMatches.Final[0],r:'Final',idx:0});
 
-        function onCanvasClick(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
-            const mouseX = (e.clientX - rect.left) * scaleX, mouseY = (e.clientY - rect.top) * scaleY;
-            const coords = computeCoords();
-
-            const clickables = [];
-            for (let i = 0; i < 8; i++) clickables.push({c: coords.leftR32[i], m: allMatches.R32[i], r:'R32', idx: i});
-            for (let i = 0; i < 4; i++) clickables.push({c: coords.leftR16[i], m: allMatches.R16[i], r:'R16', idx: i});
-            for (let i = 0; i < 2; i++) clickables.push({c: coords.leftQF[i], m: allMatches.QF[i], r:'QF', idx: i});
-            if (allMatches.SF[0]) clickables.push({c: coords.leftSF[0], m: allMatches.SF[0], r:'SF', idx: 0});
-            for (let i = 0; i < 8; i++) clickables.push({c: coords.rightR32[i], m: allMatches.R32[i+8], r:'R32', idx: i+8});
-            for (let i = 0; i < 4; i++) clickables.push({c: coords.rightR16[i], m: allMatches.R16[i+4], r:'R16', idx: i+4});
-            for (let i = 0; i < 2; i++) clickables.push({c: coords.rightQF[i], m: allMatches.QF[i+2], r:'QF', idx: i+2});
-            if (allMatches.SF[1]) clickables.push({c: coords.rightSF[0], m: allMatches.SF[1], r:'SF', idx: 1});
-            if (allMatches.Final[0] && allMatches.Final[0].team1 !== '?') clickables.push({c: coords.champion, m: allMatches.Final[0], r:'Final', idx: 0, isChamp: true});
-
-            for (let item of clickables) {
-                const c = item.c, m = item.m;
-                if (!m || m.team1 === '?' || m.team2 === '?') continue;
-                if (mouseX >= c.x && mouseX <= c.x + c.w && mouseY >= c.y && mouseY <= c.y + c.h) {
-                    handleMatchClick(item.r, item.idx, m.team1); return;
-                }
-                if (mouseX >= c.x && mouseX <= c.x + c.w && mouseY >= c.y + c.h && mouseY <= c.y + c.h*2) {
-                    handleMatchClick(item.r, item.idx, m.team2); return;
-                }
+            for(let item of clickables){
+                const c=item.c, m=item.m; if(!m||m.team1==='?'||m.team2==='?') continue;
+                if(mx>=c.x&&mx<=c.x+c.w&&my>=c.y&&my<=c.y+c.h){ handleMatchClick(item.r,item.idx,m.team1); return; }
+                if(mx>=c.x&&mx<=c.x+c.w&&my>=c.y+c.h&&my<=c.y+c.h*2){ handleMatchClick(item.r,item.idx,m.team2); return; }
             }
         }
-
-        function handleMatchClick(round, idx, team) {
-            const match = allMatches[round][idx];
-            if (!match) return;
-            if (match.winner === team) {
-                match.winner = null;
-                clearAfter(round, idx);
-            } else {
-                if (match.winner) clearAfter(round, idx);
-                match.winner = team;
-            }
+        function handleMatchClick(round,idx,team){
+            const match=allMatches[round][idx]; if(!match) return;
+            if(match.winner===team){ match.winner=null; clearAfter(round,idx); }
+            else{ if(match.winner) clearAfter(round,idx); match.winner=team; }
             drawBracket();
-            document.getElementById('resetBracketBtn').style.display = allMatches.Final[0]?.winner ? 'inline-block' : 'none';
+            document.getElementById('resetBracketBtn').style.display=allMatches.Final[0]?.winner?'inline-block':'none';
         }
-
-        function clearAfter(round, idx) {
-            const nextRoundMap = { R32: 'R16', R16: 'QF', QF: 'SF', SF: 'Final' };
-            const nextRound = nextRoundMap[round];
-            if (!nextRound) return;
-            for (let i = 0; i < (allMatches[nextRound]?.length || 0); i++) {
-                const m = allMatches[nextRound][i];
-                if (!m) continue;
-                if ((m.src1?.round === round && m.src1?.index === idx) || (m.src2?.round === round && m.src2?.index === idx)) {
-                    m.winner = null;
-                    clearAfter(nextRound, i);
+        function clearAfter(round,idx){
+            const nextMap={R32:'R16',R16:'QF',QF:'SF',SF:'Final'}, next=nextMap[round];
+            if(!next) return;
+            const arr=allMatches[next]||[];
+            for(let i=0;i<arr.length;i++){
+                const m=arr[i]; if(!m) continue;
+                if((m.src1?.round===round&&m.src1?.index===idx)||(m.src2?.round===round&&m.src2?.index===idx)){
+                    m.winner=null; clearAfter(next,i);
                 }
             }
         }
-
-        function resetBracket() {
-            for (let i = 0; i < allMatches.R32.length; i++) {
-                if (allMatches.R32[i]) allMatches.R32[i].winner = null;
-            }
-            allMatches.R16 = []; allMatches.QF = []; allMatches.SF = []; allMatches.Final = [];
-            document.getElementById('resetBracketBtn').style.display = 'none';
+        function resetBracket(){
+            for(let i=0;i<allMatches.R32.length;i++) if(allMatches.R32[i]) allMatches.R32[i].winner=null;
+            allMatches.R16=[]; allMatches.QF=[]; allMatches.SF=[]; allMatches.Final=[];
+            document.getElementById('resetBracketBtn').style.display='none';
             drawBracket();
         }
-
-        function startBracket() {
-            const { firstPicks, secondPicks, thirdTeams } = getSelectedData();
-            if (new Set(thirdTeams).size < 8) { alert('请选择8个不同的小组第三'); return; }
-            matchups = buildMatchups(firstPicks, secondPicks, thirdTeams);
-            allMatches.R32 = matchups.map(m => ({ team1: m[0], team2: m[1], winner: null, src1: null, src2: null }));
-            allMatches.R16 = []; allMatches.QF = []; allMatches.SF = []; allMatches.Final = [];
-            document.getElementById('resetBracketBtn').style.display = 'none';
+        function startBracket(){
+            const {firstPicks,secondPicks,thirdTeams}=getSelectedData();
+            if(new Set(thirdTeams).size<8){ alert('请选择8个不同的小组第三'); return; }
+            matchups=buildMatchups(firstPicks,secondPicks,thirdTeams);
+            allMatches.R32=matchups.map(m=>({team1:m[0],team2:m[1],winner:null,src1:null,src2:null}));
+            allMatches.R16=[]; allMatches.QF=[]; allMatches.SF=[]; allMatches.Final=[];
+            document.getElementById('resetBracketBtn').style.display='none';
             drawBracket();
         }
-
-        document.getElementById('generateBtn').addEventListener('click', startBracket);
-
-        buildGroupUI();
-        initBracket();
-        allMatches.R32 = [];
-        for (let i = 0; i < 16; i++) allMatches.R32.push({ team1:'?', team2:'?', winner:null, src1:null, src2:null });
+        document.getElementById('generateBtn').addEventListener('click',startBracket);
+        buildGroupUI(); initBracket();
+        allMatches.R32=[]; for(let i=0;i<16;i++) allMatches.R32.push({team1:'?',team2:'?',winner:null,src1:null,src2:null});
         drawBracket();
     })();
 </script>
