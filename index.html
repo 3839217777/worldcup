@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026世界杯·晋级路线图（对称修正版）</title>
+    <title>2026世界杯·晋级路线图（左右对称实时版）</title>
     <style>
         :root {
             --bg: #0b1a2f;
@@ -33,10 +33,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .stage-bar { display: flex; justify-content: center; gap: 30px; font-size: 0.95rem; }
-        .stage-bar span { color: #94a3b8; transition: 0.3s; }
-        .stage-bar .active { color: #f0b323; font-weight: bold; }
-        .stage-bar .completed { color: #4ade80; }
         .main-content { display: flex; gap: 24px; flex-wrap: wrap; }
         .panel {
             background: var(--panel-bg); backdrop-filter: blur(12px);
@@ -84,20 +80,16 @@
 <body>
 <div class="app">
     <div class="header">
-        <h1>⚽ 2026 世界杯 · 小组排序预测晋级图</h1>
-    </div>
-    <div class="stage-bar" id="stageBar">
-        <span id="stage1" class="active">❶ 小组排序（1-4名）</span>
-        <span id="stage2">❷ 淘汰赛预测</span>
+        <h1>⚽ 2026 世界杯 · 实时晋级预测图</h1>
     </div>
     <div class="main-content">
         <div class="panel group-panel">
-            <h2 style="color:#ffd966; margin-bottom:16px;">🌍 小组排名（每队选择唯一名次）</h2>
+            <h2 style="color:#ffd966; margin-bottom:16px;">🌍 小组排名（自动去重）</h2>
             <div id="groupsContainer"></div>
             <div class="third-section">
-                <h3 style="color:#ffd966; margin-bottom:10px;">✅ 选择8个晋级的小组第三（根据假设成绩）</h3>
+                <h3 style="color:#ffd966; margin-bottom:10px;">✅ 选择8个晋级的小组第三</h3>
                 <div class="checkbox-grid" id="thirdCheckboxes"></div>
-                <small style="color:#aaa; display:block; margin-top:8px;">（每组第三名由上方排序确定，请勾选8支你认为成绩最好的第三名）</small>
+                <small style="color:#aaa; display:block; margin-top:8px;">（每组第三名由上方排序确定，请勾选8支成绩最好的第三名）</small>
             </div>
             <button class="btn" id="generateBtn">⚡ 生成淘汰赛对阵</button>
             <div id="groupError" style="color:#ff6b6b; margin-top:10px; font-size:0.9rem;"></div>
@@ -105,7 +97,7 @@
         <div class="panel bracket-panel">
             <h2 style="color:#ffd966; margin-bottom:10px;">🏆 淘汰赛路线图（左右半区）</h2>
             <canvas id="bracketCanvas" width="1200" height="900"></canvas>
-            <div class="hint" id="roundHint">请先为每个小组排序1-4名，然后勾选8个晋级的小组第三</div>
+            <div class="hint" id="roundHint">点击球队框选择胜者（再次点击可取消）；后续对阵自动生成</div>
             <button class="reset-btn" id="resetBracketBtn" style="display:none;">↺ 重新预测淘汰赛</button>
         </div>
     </div>
@@ -170,10 +162,9 @@
         const qfPairs  = [[0,1],[2,3],[4,5],[6,7]];
         const sfPairs  = [[0,1],[2,3]];
         const finalPair = [0,1];
-        const roundOrder = ['R32','R16','QF','SF','Final'];
 
         let allMatches = { R32:[], R16:[], QF:[], SF:[], Final:[] };
-        let currentRound = 'R32', matchups = [];
+        let matchups = [];
         let canvas, ctx, matchCoords = {};
 
         if (!CanvasRenderingContext2D.prototype.roundRect) {
@@ -191,6 +182,30 @@
                 this.quadraticCurveTo(x, y, x + r.tl, y);
                 this.closePath();
             };
+        }
+
+        function autoFixDuplicates(group) {
+            const selected = [];
+            for (let pos = 1; pos <= 4; pos++) {
+                selected.push(document.getElementById(`pos${pos}_${group}`).value);
+            }
+            const seen = {};
+            for (let i = 0; i < selected.length; i++) {
+                const val = selected[i];
+                if (seen[val] !== undefined) {
+                    // 找到未出现的球队
+                    const available = groups[group].filter(t => !selected.includes(t));
+                    if (available.length > 0) {
+                        // 修改触发下拉框之外的那个
+                        const currentSel = document.activeElement;
+                        let otherIdx = (document.getElementById(`pos${i+1}_${group}`) === currentSel) ? seen[val] : i;
+                        document.getElementById(`pos${otherIdx+1}_${group}`).value = available[0];
+                        return autoFixDuplicates(group); // 递归修正
+                    }
+                } else {
+                    seen[val] = i;
+                }
+            }
         }
 
         function buildGroupUI() {
@@ -231,8 +246,11 @@
 
             document.querySelectorAll('#thirdCheckboxes input').forEach((cb, idx) => { cb.checked = idx < 8; });
             document.querySelectorAll('select').forEach(sel => {
-                sel.addEventListener('change', updateThirdLabels);
-                sel.addEventListener('change', validateGroupSelections);
+                sel.addEventListener('change', function() {
+                    const groupId = this.id.split('_')[1];
+                    autoFixDuplicates(groupId);
+                    updateThirdLabels();
+                });
             });
             updateThirdLabels();
         }
@@ -245,26 +263,6 @@
             }
         }
 
-        function validateGroupSelections() {
-            let valid = true;
-            for (let g of Object.keys(groups)) {
-                const selected = [];
-                for (let pos = 1; pos <= 4; pos++) selected.push(document.getElementById(`pos${pos}_${g}`).value);
-                const errEl = document.getElementById(`err_${g}`);
-                if (new Set(selected).size < 4) {
-                    errEl.textContent = '❌ 名次不能重复';
-                    errEl.style.display = 'block';
-                    valid = false;
-                } else errEl.style.display = 'none';
-            }
-            const checked = document.querySelectorAll('#thirdCheckboxes input:checked');
-            if (checked.length !== 8) {
-                document.getElementById('groupError').textContent = '❌ 必须选择8个小组第三';
-                valid = false;
-            } else document.getElementById('groupError').textContent = '';
-            return valid;
-        }
-
         function getSelectedData() {
             const firstPicks = {}, secondPicks = {}, thirdTeamsAll = {};
             for (let g of Object.keys(groups)) {
@@ -275,7 +273,7 @@
             const selectedThirdGroups = [];
             document.querySelectorAll('#thirdCheckboxes input:checked').forEach(cb => selectedThirdGroups.push(cb.value));
             const thirdTeams = selectedThirdGroups.map(g => thirdTeamsAll[g]);
-            return { firstPicks, secondPicks, thirdTeams, thirdTeamsAll };
+            return { firstPicks, secondPicks, thirdTeams };
         }
 
         function buildMatchups(firstPicks, secondPicks, thirdTeams) {
@@ -293,110 +291,114 @@
             canvas = document.getElementById('bracketCanvas');
             ctx = canvas.getContext('2d');
             canvas.addEventListener('click', onCanvasClick);
-            canvas.addEventListener('dblclick', onCanvasDblClick);
             document.getElementById('resetBracketBtn').addEventListener('click', resetBracket);
         }
 
-        // 优化后的坐标计算：增加左右SF到冠军的距离，避免重叠
+        function propagateWinners() {
+            // 从R32生成后续轮次
+            const genRound = (fromRound, toRound, pairs) => {
+                for (let i = 0; i < pairs.length; i++) {
+                    const [a, b] = pairs[i];
+                    const m1 = allMatches[fromRound][a], m2 = allMatches[fromRound][b];
+                    if (m1?.winner && m2?.winner) {
+                        if (!allMatches[toRound][i]) {
+                            allMatches[toRound][i] = {
+                                team1: m1.winner,
+                                team2: m2.winner,
+                                winner: null,
+                                src1: { round: fromRound, index: a },
+                                src2: { round: fromRound, index: b }
+                            };
+                        } else {
+                            allMatches[toRound][i].team1 = m1.winner;
+                            allMatches[toRound][i].team2 = m2.winner;
+                            if (allMatches[toRound][i].winner && allMatches[toRound][i].winner !== m1.winner && allMatches[toRound][i].winner !== m2.winner) {
+                                allMatches[toRound][i].winner = null;
+                            }
+                        }
+                    } else {
+                        allMatches[toRound][i] = null;
+                    }
+                }
+            };
+            genRound('R32', 'R16', r16Pairs);
+            genRound('R16', 'QF', qfPairs);
+            genRound('QF', 'SF', sfPairs);
+            const [a, b] = finalPair;
+            const m1 = allMatches.SF[a], m2 = allMatches.SF[b];
+            if (m1?.winner && m2?.winner) {
+                allMatches.Final[0] = {
+                    team1: m1.winner,
+                    team2: m2.winner,
+                    winner: null,
+                    src1: { round: 'SF', index: a },
+                    src2: { round: 'SF', index: b }
+                };
+            } else {
+                allMatches.Final[0] = null;
+            }
+        }
+
+        // 左右对称坐标
         function computeCoords() {
             const cw = canvas.width, ch = canvas.height;
             const boxW = 130, boxH = 24;
             const championW = 180, championH = 52;
             const centerX = cw / 2, centerY = ch / 2;
-
-            // 调整SF位置，使其与冠军框保持足够距离（至少40px）
-            const leftSFx = centerX - championW/2 - 50 - boxW;   // 左SF
-            const rightSFx = centerX + championW/2 + 50;        // 右SF
-
-            // 其他轮次位置
+            const leftSFx = centerX - championW/2 - 60 - boxW;
+            const rightSFx = centerX + championW/2 + 60;
             const leftR32x = 20;
-            const leftR16x = leftR32x + 160;
-            const leftQFx = leftR16x + 160;
-            // 保证左QF与左SF间有间距
-            const actualLeftQFx = Math.min(leftQFx, leftSFx - 170);
-
-            const rightR32x = cw - 20 - boxW;
-            const rightR16x = rightR32x - 160;
-            const rightQFx = rightR16x - 160;
-            const actualRightQFx = Math.max(rightQFx, rightSFx + 170);
-
-            const usableH = ch - 100;
-            const startY = 50;
+            const colStep = 180;
+            const usableH = ch - 120;
+            const startY = 60;
 
             const leftR32 = [], leftR16 = [], leftQF = [], leftSF = [];
             const rightR32 = [], rightR16 = [], rightQF = [], rightSF = [];
 
             for (let i = 0; i < 8; i++) {
-                const centerY = startY + i * (usableH / 8) + usableH/16;
-                leftR32.push({ x: leftR32x, y: centerY - boxH, centerY, w: boxW, h: boxH });
+                const cy = startY + i * (usableH/8) + usableH/16;
+                leftR32.push({ x: leftR32x, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
             }
             for (let i = 0; i < 4; i++) {
-                const centerY = startY + i * (usableH / 4) + usableH/8;
-                leftR16.push({ x: leftR16x, y: centerY - boxH, centerY, w: boxW, h: boxH });
+                const cy = startY + i * (usableH/4) + usableH/8;
+                leftR16.push({ x: leftR32x + colStep, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
             }
             for (let i = 0; i < 2; i++) {
-                const centerY = startY + i * (usableH / 2) + usableH/4;
-                leftQF.push({ x: actualLeftQFx, y: centerY - boxH, centerY, w: boxW, h: boxH });
+                const cy = startY + i * (usableH/2) + usableH/4;
+                leftQF.push({ x: leftR32x + colStep*2, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
             }
             leftSF.push({ x: leftSFx, y: centerY - boxH, centerY, w: boxW, h: boxH });
 
+            const rightR32x = cw - 20 - boxW;
             for (let i = 0; i < 8; i++) {
-                const centerY = startY + i * (usableH / 8) + usableH/16;
-                rightR32.push({ x: rightR32x, y: centerY - boxH, centerY, w: boxW, h: boxH });
+                const cy = startY + i * (usableH/8) + usableH/16;
+                rightR32.push({ x: rightR32x, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
             }
             for (let i = 0; i < 4; i++) {
-                const centerY = startY + i * (usableH / 4) + usableH/8;
-                rightR16.push({ x: rightR16x, y: centerY - boxH, centerY, w: boxW, h: boxH });
+                const cy = startY + i * (usableH/4) + usableH/8;
+                rightR16.push({ x: rightR32x - colStep, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
             }
             for (let i = 0; i < 2; i++) {
-                const centerY = startY + i * (usableH / 2) + usableH/4;
-                rightQF.push({ x: actualRightQFx, y: centerY - boxH, centerY, w: boxW, h: boxH });
+                const cy = startY + i * (usableH/2) + usableH/4;
+                rightQF.push({ x: rightR32x - colStep*2, y: cy - boxH, centerY: cy, w: boxW, h: boxH });
             }
             rightSF.push({ x: rightSFx, y: centerY - boxH, centerY, w: boxW, h: boxH });
 
-            const champion = { x: centerX - championW/2, y: centerY - championH/2, centerY, w: championW, h: championH };
+            const championX = centerX - championW/2;
+            const championY = centerY - championH/2;
+            const champion = { x: championX, y: championY, centerY, w: championW, h: championH };
 
-            return {
-                leftR32, leftR16, leftQF, leftSF,
-                rightR32, rightR16, rightQF, rightSF,
-                champion
-            };
-        }
-
-        function getChampionPath() {
-            const pathSet = new Set();
-            if (!allMatches.Final[0]?.winner) return pathSet;
-            let round = 'Final', idx = 0;
-            let match = allMatches[round][idx];
-            pathSet.add(`${round}-${idx}`);
-            while (match && match.src1 && match.src2) {
-                const next = (match.winner === match.team1) ? match.src1 : match.src2;
-                if (!next) break;
-                round = next.round; idx = next.index;
-                match = allMatches[round]?.[idx];
-                if (!match) break;
-                pathSet.add(`${round}-${idx}`);
-            }
-            return pathSet;
+            return { leftR32, leftR16, leftQF, leftSF,
+                     rightR32, rightR16, rightQF, rightSF,
+                     champion };
         }
 
         function drawBracket() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const coords = computeCoords();
-            const champPath = getChampionPath();
-            const championName = allMatches.Final[0]?.winner || null;
+            propagateWinners();
 
-            const leftR32 = allMatches.R32.slice(0, 8);
-            const rightR32 = allMatches.R32.slice(8, 16);
-            const leftR16 = allMatches.R16.slice(0, 4);
-            const rightR16 = allMatches.R16.slice(4, 8);
-            const leftQF = allMatches.QF.slice(0, 2);
-            const rightQF = allMatches.QF.slice(2, 4);
-            const leftSF = allMatches.SF.slice(0, 1);
-            const rightSF = allMatches.SF.slice(1, 2);
-            const finalMatch = allMatches.Final[0];
-
-            function drawLinks(fromArr, toArr, fromCoords, toCoords, pairs, direction) {
+            function drawLinks(fromCoords, toCoords, pairs, direction) {
                 for (let i = 0; i < pairs.length; i++) {
                     const [a, b] = pairs[i];
                     const p1 = fromCoords[a], p2 = fromCoords[b];
@@ -431,149 +433,105 @@
                 }
             }
 
-            drawLinks(leftR32, leftR16, coords.leftR32, coords.leftR16, [[0,1],[2,3],[4,5],[6,7]], 'left');
-            drawLinks(leftR16, leftQF, coords.leftR16, coords.leftQF, [[0,1],[2,3]], 'left');
-            drawLinks(leftQF, leftSF, coords.leftQF, coords.leftSF, [[0,1]], 'left');
+            drawLinks(coords.leftR32, coords.leftR16, [[0,1],[2,3],[4,5],[6,7]], 'left');
+            drawLinks(coords.leftR16, coords.leftQF, [[0,1],[2,3]], 'left');
+            drawLinks(coords.leftQF, coords.leftSF, [[0,1]], 'left');
 
-            drawLinks(rightR32, rightR16, coords.rightR32, coords.rightR16, [[0,1],[2,3],[4,5],[6,7]], 'right');
-            drawLinks(rightR16, rightQF, coords.rightR16, coords.rightQF, [[0,1],[2,3]], 'right');
-            drawLinks(rightQF, rightSF, coords.rightQF, coords.rightSF, [[0,1]], 'right');
+            drawLinks(coords.rightR32, coords.rightR16, [[0,1],[2,3],[4,5],[6,7]], 'right');
+            drawLinks(coords.rightR16, coords.rightQF, [[0,1],[2,3]], 'right');
+            drawLinks(coords.rightQF, coords.rightSF, [[0,1]], 'right');
 
-            if (leftSF.length && rightSF.length) {
-                const lsf = coords.leftSF[0], rsf = coords.rightSF[0];
-                const champ = coords.champion;
-                ctx.beginPath();
-                ctx.strokeStyle = '#5a7a9a';
-                ctx.lineWidth = 2;
-                ctx.moveTo(lsf.x + lsf.w, lsf.centerY);
-                ctx.lineTo(champ.x, lsf.centerY);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(rsf.x, rsf.centerY);
-                ctx.lineTo(champ.x + champ.w, rsf.centerY);
-                ctx.stroke();
-            }
+            const lsf = coords.leftSF[0], rsf = coords.rightSF[0], champ = coords.champion;
+            ctx.beginPath(); ctx.strokeStyle = '#5a7a9a'; ctx.lineWidth = 2;
+            ctx.moveTo(lsf.x + lsf.w, lsf.centerY);
+            ctx.lineTo(champ.x, lsf.centerY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(rsf.x, rsf.centerY);
+            ctx.lineTo(champ.x + champ.w, rsf.centerY);
+            ctx.stroke();
 
-            function drawMatchBox(coord, match, round, idx, isCurrent, onPath) {
-                const team1Text = withFlag(match.team1);
-                const team2Text = withFlag(match.team2);
+            function drawMatchBox(coord, match) {
+                if (!match) {
+                    ctx.fillStyle = '#102b3f';
+                    ctx.strokeStyle = '#4a627a';
+                    ctx.lineWidth = 1.2;
+                    ctx.beginPath(); ctx.roundRect(coord.x, coord.y, coord.w, coord.h*2, 5);
+                    ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#aaa';
+                    ctx.font = '11px "Segoe UI"'; ctx.textAlign = 'center';
+                    ctx.fillText('?', coord.x + coord.w/2, coord.y + coord.h + 6);
+                    return;
+                }
+                const t1 = withFlag(match.team1), t2 = withFlag(match.team2);
                 const c = coord;
-
                 ctx.fillStyle = (match.winner === match.team1) ? '#1a472a' : '#102b3f';
-                ctx.strokeStyle = onPath ? '#ffd966' : (isCurrent ? '#f0b323' : '#4a627a');
-                ctx.lineWidth = onPath ? 2.5 : 1.2;
+                ctx.strokeStyle = match.winner ? '#4ade80' : '#f0b323';
+                ctx.lineWidth = 1.5;
                 ctx.beginPath(); ctx.roundRect(c.x, c.y, c.w, c.h, 5);
                 ctx.fill(); ctx.stroke();
                 ctx.fillStyle = '#f1f5f9';
                 ctx.font = '11px "Segoe UI"'; ctx.textAlign = 'center';
-                ctx.fillText(truncate(team1Text, 18), c.x + c.w/2, c.y + 16);
+                ctx.fillText(truncate(t1, 18), c.x + c.w/2, c.y + 16);
 
                 ctx.fillStyle = (match.winner === match.team2) ? '#1a472a' : '#102b3f';
                 ctx.beginPath(); ctx.roundRect(c.x, c.y + c.h, c.w, c.h, 5);
                 ctx.fill(); ctx.stroke();
                 ctx.fillStyle = '#f1f5f9';
-                ctx.fillText(truncate(team2Text, 18), c.x + c.w/2, c.y + c.h + 16);
+                ctx.fillText(truncate(t2, 18), c.x + c.w/2, c.y + c.h + 16);
 
                 if (match.winner) {
                     ctx.fillStyle = '#4ade80';
-                    ctx.font = 'bold 10px "Segoe UI"';
+                    ctx.font = 'bold 10px';
                     ctx.fillText('✔', c.x + c.w/2, c.y + c.h + 10);
                 } else {
                     ctx.fillStyle = '#ffd966';
-                    ctx.font = 'bold 8px "Segoe UI"';
+                    ctx.font = 'bold 8px';
                     ctx.fillText('VS', c.x + c.w/2, c.y + c.h + 10);
                 }
             }
 
             // 左半区
-            for (let i = 0; i < 8; i++) {
-                const m = leftR32[i] || { team1:'?', team2:'?', winner:null };
-                const onPath = champPath.has(`R32-${i}`);
-                drawMatchBox(coords.leftR32[i], m, 'R32', i, currentRound==='R32', onPath);
-            }
-            for (let i = 0; i < 4; i++) {
-                const m = leftR16[i] || { team1:'?', team2:'?', winner:null };
-                const onPath = champPath.has(`R16-${i}`);
-                drawMatchBox(coords.leftR16[i], m, 'R16', i, currentRound==='R16', onPath);
-            }
-            for (let i = 0; i < 2; i++) {
-                const m = leftQF[i] || { team1:'?', team2:'?', winner:null };
-                const onPath = champPath.has(`QF-${i}`);
-                drawMatchBox(coords.leftQF[i], m, 'QF', i, currentRound==='QF', onPath);
-            }
-            if (leftSF.length) {
-                const m = leftSF[0] || { team1:'?', team2:'?', winner:null };
-                const onPath = champPath.has('SF-0');
-                drawMatchBox(coords.leftSF[0], m, 'SF', 0, currentRound==='SF', onPath);
-            }
+            for (let i = 0; i < 8; i++) drawMatchBox(coords.leftR32[i], allMatches.R32[i]);
+            for (let i = 0; i < 4; i++) drawMatchBox(coords.leftR16[i], allMatches.R16[i]);
+            for (let i = 0; i < 2; i++) drawMatchBox(coords.leftQF[i], allMatches.QF[i]);
+            drawMatchBox(coords.leftSF[0], allMatches.SF[0]);
 
             // 右半区
-            for (let i = 0; i < 8; i++) {
-                const m = rightR32[i] || { team1:'?', team2:'?', winner:null };
-                const onPath = champPath.has(`R32-${i+8}`);
-                drawMatchBox(coords.rightR32[i], m, 'R32', i+8, currentRound==='R32', onPath);
-            }
-            for (let i = 0; i < 4; i++) {
-                const m = rightR16[i] || { team1:'?', team2:'?', winner:null };
-                const onPath = champPath.has(`R16-${i+4}`);
-                drawMatchBox(coords.rightR16[i], m, 'R16', i+4, currentRound==='R16', onPath);
-            }
-            for (let i = 0; i < 2; i++) {
-                const m = rightQF[i] || { team1:'?', team2:'?', winner:null };
-                const onPath = champPath.has(`QF-${i+2}`);
-                drawMatchBox(coords.rightQF[i], m, 'QF', i+2, currentRound==='QF', onPath);
-            }
-            if (rightSF.length) {
-                const m = rightSF[0] || { team1:'?', team2:'?', winner:null };
-                const onPath = champPath.has('SF-1');
-                drawMatchBox(coords.rightSF[0], m, 'SF', 1, currentRound==='SF', onPath);
-            }
+            for (let i = 0; i < 8; i++) drawMatchBox(coords.rightR32[i], allMatches.R32[i+8]);
+            for (let i = 0; i < 4; i++) drawMatchBox(coords.rightR16[i], allMatches.R16[i+4]);
+            for (let i = 0; i < 2; i++) drawMatchBox(coords.rightQF[i], allMatches.QF[i+2]);
+            drawMatchBox(coords.rightSF[0], allMatches.SF[1]);
 
             // 冠军框
+            const finalMatch = allMatches.Final[0];
             if (finalMatch) {
                 const c = coords.champion;
-                const onPath = champPath.has('Final-0');
-                const isCurrent = (currentRound === 'Final');
                 ctx.fillStyle = '#0a1a2a';
-                ctx.strokeStyle = onPath ? '#ffd966' : (isCurrent ? '#f0b323' : '#4a627a');
-                ctx.lineWidth = onPath ? 3 : 2;
+                ctx.strokeStyle = finalMatch.winner ? '#ffd966' : '#f0b323';
+                ctx.lineWidth = finalMatch.winner ? 3 : 2;
                 ctx.beginPath(); ctx.roundRect(c.x, c.y, c.w, c.h, 12);
                 ctx.fill(); ctx.stroke();
 
-                if (championName) {
+                if (finalMatch.winner) {
                     ctx.fillStyle = '#f0b323';
                     ctx.font = 'bold 16px "Segoe UI"';
                     ctx.textAlign = 'center';
-                    ctx.fillText('🏆 ' + withFlag(championName), c.x + c.w/2, c.y + c.h/2 + 6);
-                } else if (finalMatch.team1 && finalMatch.team1 !== '?') {
-                    const t1 = withFlag(finalMatch.team1);
-                    const t2 = withFlag(finalMatch.team2);
+                    ctx.fillText('🏆 ' + withFlag(finalMatch.winner), c.x + c.w/2, c.y + c.h/2 + 6);
+                } else {
                     ctx.fillStyle = '#f1f5f9';
                     ctx.font = '13px "Segoe UI"';
-                    ctx.fillText(t1 + '  vs  ' + t2, c.x + c.w/2, c.y + c.h/2 + 6);
-                } else {
-                    ctx.fillStyle = '#aaa';
-                    ctx.font = '13px "Segoe UI"';
-                    ctx.fillText('?', c.x + c.w/2, c.y + c.h/2 + 6);
+                    ctx.fillText(withFlag(finalMatch.team1) + '  vs  ' + withFlag(finalMatch.team2), c.x + c.w/2, c.y + c.h/2 + 6);
                 }
             }
 
-            updateHint();
+            const hint = document.getElementById('roundHint');
+            if (finalMatch?.winner) hint.textContent = '🎉 冠军诞生！点击任意已选胜者可取消';
+            else hint.textContent = '👆 点击球队框选择胜者（再次点击可取消）；后续对阵自动生成';
         }
 
         function truncate(str, max) {
             return str.length > max ? str.slice(0, max-1) + '…' : str;
-        }
-
-        function updateHint() {
-            const hint = document.getElementById('roundHint');
-            if (currentRound === 'R32') hint.textContent = '👆 点击球队框选择胜者（32强）—— 需选完16场后进入下一轮';
-            else if (currentRound === 'R16') hint.textContent = '👆 16强进行中，选出所有胜者进入8强';
-            else if (currentRound === 'QF') hint.textContent = '👆 8强赛，选出4强';
-            else if (currentRound === 'SF') hint.textContent = '👆 半决赛，选出决赛队伍';
-            else if (currentRound === 'Final') hint.textContent = '👆 决赛！点击冠军队伍';
-            else if (currentRound === 'Done') hint.textContent = '🎉 冠军诞生！双击任意已选比赛可撤销';
-            else hint.textContent = '';
         }
 
         function onCanvasClick(e) {
@@ -582,110 +540,72 @@
             const mouseX = (e.clientX - rect.left) * scaleX, mouseY = (e.clientY - rect.top) * scaleY;
             const coords = computeCoords();
 
-            const allCoords = [
-                ...coords.leftR32.map((c,i) => ({c, round:'R32', idx:i, match: allMatches.R32[i]})),
-                ...coords.leftR16.map((c,i) => ({c, round:'R16', idx:i, match: allMatches.R16[i]})),
-                ...coords.leftQF.map((c,i) => ({c, round:'QF', idx:i, match: allMatches.QF[i]})),
-                ...coords.leftSF.map((c,i) => ({c, round:'SF', idx:i, match: allMatches.SF[i]})),
-                ...coords.rightR32.map((c,i) => ({c, round:'R32', idx:i+8, match: allMatches.R32[i+8]})),
-                ...coords.rightR16.map((c,i) => ({c, round:'R16', idx:i+4, match: allMatches.R16[i+4]})),
-                ...coords.rightQF.map((c,i) => ({c, round:'QF', idx:i+2, match: allMatches.QF[i+2]})),
-                ...coords.rightSF.map((c,i) => ({c, round:'SF', idx:i+1, match: allMatches.SF[i+1]})),
-            ];
+            const clickables = [];
+            for (let i = 0; i < 8; i++) clickables.push({c: coords.leftR32[i], m: allMatches.R32[i], r:'R32', idx: i});
+            for (let i = 0; i < 4; i++) clickables.push({c: coords.leftR16[i], m: allMatches.R16[i], r:'R16', idx: i});
+            for (let i = 0; i < 2; i++) clickables.push({c: coords.leftQF[i], m: allMatches.QF[i], r:'QF', idx: i});
+            if (allMatches.SF[0]) clickables.push({c: coords.leftSF[0], m: allMatches.SF[0], r:'SF', idx: 0});
+            for (let i = 0; i < 8; i++) clickables.push({c: coords.rightR32[i], m: allMatches.R32[i+8], r:'R32', idx: i+8});
+            for (let i = 0; i < 4; i++) clickables.push({c: coords.rightR16[i], m: allMatches.R16[i+4], r:'R16', idx: i+4});
+            for (let i = 0; i < 2; i++) clickables.push({c: coords.rightQF[i], m: allMatches.QF[i+2], r:'QF', idx: i+2});
+            if (allMatches.SF[1]) clickables.push({c: coords.rightSF[0], m: allMatches.SF[1], r:'SF', idx: 1});
+            if (allMatches.Final[0] && allMatches.Final[0].team1 !== '?') clickables.push({c: coords.champion, m: allMatches.Final[0], r:'Final', idx: 0, isChamp: true});
 
-            for (let item of allCoords) {
-                if (item.round !== currentRound) continue;
-                const c = item.c, m = item.match;
+            for (let item of clickables) {
+                const c = item.c, m = item.m;
                 if (!m || m.team1 === '?' || m.team2 === '?') continue;
                 if (mouseX >= c.x && mouseX <= c.x + c.w && mouseY >= c.y && mouseY <= c.y + c.h) {
-                    selectWinner(item.round, item.idx, m.team1); return;
+                    handleMatchClick(item.r, item.idx, m.team1); return;
                 }
                 if (mouseX >= c.x && mouseX <= c.x + c.w && mouseY >= c.y + c.h && mouseY <= c.y + c.h*2) {
-                    selectWinner(item.round, item.idx, m.team2); return;
+                    handleMatchClick(item.r, item.idx, m.team2); return;
                 }
             }
         }
 
-        function selectWinner(round, idx, team) {
-            if (allMatches[round][idx].winner) return;
-            const sameTeam = allMatches[round].some((m, i) => i !== idx && m.winner === team);
-            if (sameTeam) { alert('❌ 同一球队不能在同一轮两次胜出！'); return; }
-            allMatches[round][idx].winner = team;
-            drawBracket();
-            const allDone = allMatches[round].every(m => m.winner);
-            if (!allDone) return;
-            if (round === 'R32') { generateNextRound('R16', r16Pairs); currentRound = 'R16'; }
-            else if (round === 'R16') { generateNextRound('QF', qfPairs); currentRound = 'QF'; }
-            else if (round === 'QF') { generateNextRound('SF', sfPairs); currentRound = 'SF'; }
-            else if (round === 'SF') { generateNextRound('Final', finalPair); currentRound = 'Final'; }
-            else if (round === 'Final') { currentRound = 'Done'; document.getElementById('resetBracketBtn').style.display = 'inline-block'; }
-            drawBracket();
-        }
-
-        function generateNextRound(nextRound, pairs) {
-            const prev = allMatches[currentRound];
-            allMatches[nextRound] = [];
-            for (let i = 0; i < pairs.length; i++) {
-                const [a, b] = pairs[i];
-                allMatches[nextRound].push({
-                    team1: prev[a].winner,
-                    team2: prev[b].winner,
-                    winner: null,
-                    src1: { round: currentRound, index: a },
-                    src2: { round: currentRound, index: b }
-                });
+        function handleMatchClick(round, idx, team) {
+            const match = allMatches[round][idx];
+            if (!match) return;
+            if (match.winner === team) {
+                match.winner = null;
+                clearAfter(round, idx);
+            } else {
+                if (match.winner) clearAfter(round, idx);
+                match.winner = team;
             }
+            drawBracket();
+            document.getElementById('resetBracketBtn').style.display = allMatches.Final[0]?.winner ? 'inline-block' : 'none';
         }
 
-        function onCanvasDblClick(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
-            const mouseX = (e.clientX - rect.left) * scaleX, mouseY = (e.clientY - rect.top) * scaleY;
-            const coords = computeCoords();
-            const allCoords = [
-                ...coords.leftR32.map((c,i) => ({c, round:'R32', idx:i, match: allMatches.R32[i]})),
-                ...coords.leftR16.map((c,i) => ({c, round:'R16', idx:i, match: allMatches.R16[i]})),
-                ...coords.leftQF.map((c,i) => ({c, round:'QF', idx:i, match: allMatches.QF[i]})),
-                ...coords.leftSF.map((c,i) => ({c, round:'SF', idx:i, match: allMatches.SF[i]})),
-                ...coords.rightR32.map((c,i) => ({c, round:'R32', idx:i+8, match: allMatches.R32[i+8]})),
-                ...coords.rightR16.map((c,i) => ({c, round:'R16', idx:i+4, match: allMatches.R16[i+4]})),
-                ...coords.rightQF.map((c,i) => ({c, round:'QF', idx:i+2, match: allMatches.QF[i+2]})),
-                ...coords.rightSF.map((c,i) => ({c, round:'SF', idx:i+1, match: allMatches.SF[i+1]})),
-            ];
-
-            for (let item of allCoords) {
-                const c = item.c, m = item.match;
-                if (!m || !m.winner) continue;
-                const inUpper = mouseX >= c.x && mouseX <= c.x + c.w && mouseY >= c.y && mouseY <= c.y + c.h;
-                const inLower = mouseX >= c.x && mouseX <= c.x + c.w && mouseY >= c.y + c.h && mouseY <= c.y + c.h*2;
-                if (inUpper || inLower) {
+        function clearAfter(round, idx) {
+            const nextRoundMap = { R32: 'R16', R16: 'QF', QF: 'SF', SF: 'Final' };
+            const nextRound = nextRoundMap[round];
+            if (!nextRound) return;
+            for (let i = 0; i < (allMatches[nextRound]?.length || 0); i++) {
+                const m = allMatches[nextRound][i];
+                if (!m) continue;
+                if ((m.src1?.round === round && m.src1?.index === idx) || (m.src2?.round === round && m.src2?.index === idx)) {
                     m.winner = null;
-                    const roundIdx = roundOrder.indexOf(item.round);
-                    const currentIdx = roundOrder.indexOf(currentRound);
-                    if (roundIdx < currentIdx || currentRound === 'Done') currentRound = item.round;
-                    for (let j = roundIdx + 1; j < roundOrder.length; j++) allMatches[roundOrder[j]] = [];
-                    document.getElementById('resetBracketBtn').style.display = 'none';
-                    drawBracket();
-                    return;
+                    clearAfter(nextRound, i);
                 }
             }
         }
 
         function resetBracket() {
-            allMatches = { R32:[], R16:[], QF:[], SF:[], Final:[] };
-            allMatches.R32 = matchups.map(m => ({ team1: m[0], team2: m[1], winner: null, src1: null, src2: null }));
-            currentRound = 'R32';
+            for (let i = 0; i < allMatches.R32.length; i++) {
+                if (allMatches.R32[i]) allMatches.R32[i].winner = null;
+            }
+            allMatches.R16 = []; allMatches.QF = []; allMatches.SF = []; allMatches.Final = [];
             document.getElementById('resetBracketBtn').style.display = 'none';
             drawBracket();
         }
 
         function startBracket() {
-            if (!validateGroupSelections()) return;
             const { firstPicks, secondPicks, thirdTeams } = getSelectedData();
+            if (new Set(thirdTeams).size < 8) { alert('请选择8个不同的小组第三'); return; }
             matchups = buildMatchups(firstPicks, secondPicks, thirdTeams);
-            allMatches = { R32:[], R16:[], QF:[], SF:[], Final:[] };
             allMatches.R32 = matchups.map(m => ({ team1: m[0], team2: m[1], winner: null, src1: null, src2: null }));
-            currentRound = 'R32';
+            allMatches.R16 = []; allMatches.QF = []; allMatches.SF = []; allMatches.Final = [];
             document.getElementById('resetBracketBtn').style.display = 'none';
             drawBracket();
         }
@@ -694,8 +614,8 @@
 
         buildGroupUI();
         initBracket();
-        allMatches = { R32:[], R16:[], QF:[], SF:[], Final:[] };
-        for (let i=0; i<16; i++) allMatches.R32.push({ team1:'?', team2:'?', winner:null, src1:null, src2:null });
+        allMatches.R32 = [];
+        for (let i = 0; i < 16; i++) allMatches.R32.push({ team1:'?', team2:'?', winner:null, src1:null, src2:null });
         drawBracket();
     })();
 </script>
